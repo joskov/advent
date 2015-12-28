@@ -2,9 +2,9 @@
 Advent of Code Solutions
 Written in Ruby (with ActiveSupport)
 
-Current Progress: 39 *
+Current Progress: 45 *
 - 25
-- 24
+- 24 **
 - 23
 - 22 **
 - 21 **
