@@ -8,51 +8,35 @@ def self.add_transformation(line)
   key = matches[1]
   molecule = matches[2].strip
   @transformations[key] ||= []
-  @transformations[key] << molecule
+  @transformations[key] << split_molecule(molecule)
 end
 
-def self.possible_origins(molecules)
-  result = []
-  molecules.each do |molecule|
-    find_origins(molecule, result)
-  end
-  result.uniq!
-  result.sort!
-  result
-end
-
-def self.find_origins(molecule, result)
-  @transformations.each do |key, transformation|
-    transformation.each do |possible_transformation|
-      transformation_length = possible_transformation.length
-      (0..(molecule.length - transformation_length + 1)).each do |index|
-        next unless molecule.slice(index, transformation_length) == possible_transformation
-        origin_molecule = molecule.dup
-        origin_molecule.slice!(index, transformation_length)
-        origin_molecule.insert(index, key)
-        result << origin_molecule
-      end
-    end
-  end
-  nil
+def self.split_molecule(molecule)
+  molecule.strip.split(/(?=[A-Z])/)
 end
 
 @transformations = {}
-@molecule = lines.pop.strip
+@molecule = split_molecule(lines.pop)
 lines.pop
 
 lines.each do |line|
   add_transformation(line)
 end
 
-result = [@molecule]
-iterations = 0
-loop do
-  result = possible_origins(result)
-  iterations += 1
-  print "Iteration: #{iterations}, possible origins: #{result.count}\n"
-  break if result.include?('e')
+def self.hack(molecule)
+  result = molecule.count - 1
+  molecule.each do |atom|
+    case atom
+    when 'Rn', 'Ar'
+      result -= 1
+    when 'Y'
+      result -= 2
+    end
+  end
+  result
 end
-result = 0
 
-print "Result is: #{iterations}\n"
+print "#{@molecule}\n"
+print "#{@transformations}\n"
+
+print "Result is: #{hack(@molecule)}\n"
